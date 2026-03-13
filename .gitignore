@@ -1,4 +1,5 @@
 .claude/
+.multi-agent-cowork/
 __pycache__/
 *.pyc
 
