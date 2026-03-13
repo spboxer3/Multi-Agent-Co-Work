@@ -21,14 +21,18 @@ def which(cmd: str) -> str | None:
 
 
 def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8") if path.exists() else ""
+    return path.read_text(encoding="utf-8") if path.is_file() else ""
 
 
 def atomic_write_text(path: Path, content: str) -> None:
     ensure_dir(path.parent)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(content, encoding="utf-8")
-    tmp.replace(path)
+    import sys
+    if sys.platform == "win32":
+        path.write_text(content, encoding="utf-8")
+    else:
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(content, encoding="utf-8")
+        tmp.replace(path)
 
 
 def write_text(path: Path, content: str) -> None:

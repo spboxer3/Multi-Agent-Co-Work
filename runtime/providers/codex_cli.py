@@ -17,7 +17,7 @@ class CodexProvider(Provider):
         stdout_path = provider_dir / "stdout.jsonl"
         stderr_path = provider_dir / "stderr.txt"
         output_path = provider_dir / "final.json"
-        cmd = [self.config.get("command", "codex"), "exec", "--json", "--output-schema", str(schema_path), "-o", str(output_path)]
+        cmd = [self._resolve_command(self.config.get("command", "codex")), "exec", "--json", "--output-schema", str(schema_path), "-o", str(output_path)]
         model = self.config.get("model")
         if model:
             cmd += ["--model", model]
@@ -28,7 +28,7 @@ class CodexProvider(Provider):
         else:
             cmd += ["--sandbox", self.config.get("sandbox_read_only", "read-only")]
         start = time.time()
-        proc = subprocess.run(cmd + [prompt], cwd=repo_root, capture_output=True, text=True, timeout=int(self.config.get("timeout_seconds", 2400)))
+        proc = subprocess.run(cmd + ["-"], cwd=repo_root, input=prompt, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=int(self.config.get("timeout_seconds", 2400)))
         duration = time.time() - start
         write_text(stdout_path, proc.stdout)
         write_text(stderr_path, proc.stderr)
@@ -42,7 +42,7 @@ class CodexProvider(Provider):
                 payload = None
         if payload is None:
             payload = self._parse_jsonl_final(proc.stdout)
-        return ProviderResult(provider=self.name, role=role, phase=phase, status=payload.get("status", "ok"), summary=payload.get("summary", ""), relevant_files=list(payload.get("relevant_files", [])), proposed_changes=list(payload.get("proposed_changes", [])), commands=list(payload.get("commands", [])), risks=list(payload.get("risks", [])), notes=list(payload.get("notes", [])), open_questions=list(payload.get("open_questions", [])), blockers=list(payload.get("blockers", [])), decision=payload.get("decision", "continue"), confidence=float(payload.get("confidence", 0.5)), raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), output_path=str(output_path) if output_path.exists() else None, duration_seconds=duration)
+        return self._result_from_payload(payload, provider=self.name, role=role, phase=phase, raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), output_path=str(output_path) if output_path.exists() else None, duration_seconds=duration)
 
     def _parse_jsonl_final(self, text: str) -> dict[str, Any]:
         last_message = None

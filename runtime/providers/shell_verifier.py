@@ -26,7 +26,7 @@ class ShellVerifierProvider(Provider):
         start = time.time()
         failing = False
         for idx, command in enumerate(commands, start=1):
-            proc = subprocess.run(command, cwd=repo_root, shell=True, capture_output=True, text=True, timeout=int(self.config.get("timeout_seconds", 1800)))
+            proc = subprocess.run(command, cwd=repo_root, shell=True, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=int(self.config.get("timeout_seconds", 1800)))
             write_text(provider_dir / f"cmd-{idx}.stdout.txt", proc.stdout)
             write_text(provider_dir / f"cmd-{idx}.stderr.txt", proc.stderr)
             outcome = "ok" if proc.returncode == 0 else f"failed({proc.returncode})"
@@ -60,7 +60,7 @@ class ShellVerifierProvider(Provider):
         if any(marker in lower for marker in infrastructure_markers):
             return "infrastructure", notes
         if rerun_enabled:
-            rerun = subprocess.run(command, cwd=repo_root, shell=True, capture_output=True, text=True, timeout=int(self.config.get("timeout_seconds", 1800)))
+            rerun = subprocess.run(command, cwd=repo_root, shell=True, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=int(self.config.get("timeout_seconds", 1800)))
             write_text(provider_dir / f"cmd-{idx}.rerun.stdout.txt", rerun.stdout)
             write_text(provider_dir / f"cmd-{idx}.rerun.stderr.txt", rerun.stderr)
             if rerun.returncode == 0:

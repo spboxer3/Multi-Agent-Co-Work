@@ -18,10 +18,10 @@ class GeminiProvider(Provider):
         provider_dir = ensure_dir(run_dir / phase / self.name)
         stdout_path = provider_dir / "stdout.json"
         stderr_path = provider_dir / "stderr.txt"
-        cmd = [self.config.get("command", "gemini"), "-p", prompt, "--output-format", "json"]
+        cmd = [self._resolve_command(self.config.get("command", "gemini")), "-p", "", "--output-format", "json"]
         cmd.extend(self.config.get("extra_args", []))
         start = time.time()
-        proc = subprocess.run(cmd, cwd=repo_root, capture_output=True, text=True, timeout=int(self.config.get("timeout_seconds", 1800)))
+        proc = subprocess.run(cmd, cwd=repo_root, input=prompt, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=int(self.config.get("timeout_seconds", 1800)))
         duration = time.time() - start
         write_text(stdout_path, proc.stdout)
         write_text(stderr_path, proc.stderr)
@@ -32,7 +32,7 @@ class GeminiProvider(Provider):
         payload = self._extract_json_object(response_text)
         if payload is None:
             payload = {"status": "failed", "summary": "Could not parse Gemini response JSON.", "relevant_files": [], "proposed_changes": [], "commands": [], "risks": ["gemini-parse-failure"], "notes": [response_text[:2000]], "open_questions": [], "blockers": ["gemini-parse-failure"], "decision": "re-plan", "confidence": 0.0}
-        return ProviderResult(provider=self.name, role=role, phase=phase, status=payload.get("status", "ok"), summary=payload.get("summary", ""), relevant_files=list(payload.get("relevant_files", [])), proposed_changes=list(payload.get("proposed_changes", [])), commands=list(payload.get("commands", [])), risks=list(payload.get("risks", [])), notes=list(payload.get("notes", [])), open_questions=list(payload.get("open_questions", [])), blockers=list(payload.get("blockers", [])), decision=payload.get("decision", "continue"), confidence=float(payload.get("confidence", 0.5)), raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), output_path=str(stdout_path), duration_seconds=duration)
+        return self._result_from_payload(payload, provider=self.name, role=role, phase=phase, raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), output_path=str(stdout_path), duration_seconds=duration)
 
     def _parse_wrapper(self, text: str) -> dict[str, Any]:
         try:
