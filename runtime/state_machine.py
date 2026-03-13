@@ -30,6 +30,7 @@ RECOMMENDED_NEXT = {
     "block-release": PhaseName.IMPLEMENT.value,
 }
 
+
 @dataclass
 class StateMachine:
     current: str = PhaseName.INTAKE.value

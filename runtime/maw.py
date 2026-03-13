@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 from shutil import which
+from typing import Any
 
 if __package__ in {None, ""}:
     THIS = Path(__file__).resolve()
@@ -43,14 +44,15 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         "routing": {"memory": routing_memory, "resolved": resolved},
         "providers": {},
     }
+    report_dict: dict[str, Any] = report
     for name in ["codex", "claude", "gemini"]:
         try:
             cfg = config.provider(name)
         except Exception:
             continue
         binary = cfg.get("command", name)
-        report["providers"][name] = {"binary": binary, "found": bool(which(binary)), "path": which(binary)}
-    print(json.dumps(report, indent=2))
+        report_dict["providers"][name] = {"binary": binary, "found": bool(which(binary)), "path": which(binary)}
+    print(json.dumps(report_dict, indent=2))
     return 0
 
 

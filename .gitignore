@@ -1,3 +1,7 @@
 .claude/
 __pycache__/
 *.pyc
+
+.coverage
+build/
+*.egg-info/

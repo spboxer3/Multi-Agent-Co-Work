@@ -18,7 +18,7 @@ ROLE_ALIAS = {
     "review": "review",
 }
 
-DEFAULT_MEMORY = {
+DEFAULT_MEMORY: dict[str, Any] = {
     "version": 1,
     "profile": None,
     "overrides": {},

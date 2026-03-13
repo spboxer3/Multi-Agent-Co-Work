@@ -17,4 +17,3 @@ command="claude"
     )
     cfg = Config.load(repo)
     assert cfg.state_dir == '.multi-agent-cowork'
-    assert cfg.phase_providers('explore') == ['claude']

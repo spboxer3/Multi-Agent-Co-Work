@@ -3,10 +3,11 @@ from .claude_code import ClaudeProvider
 from .codex_cli import CodexProvider
 from .gemini_cli import GeminiProvider
 from .shell_verifier import ShellVerifierProvider
+from typing import Dict, Type
 
 
 def provider_factory(name: str, config: dict) -> Provider:
-    mapping = {
+    mapping: Dict[str, Type[Provider]] = {
         "claude": ClaudeProvider,
         "codex": CodexProvider,
         "gemini": GeminiProvider,
