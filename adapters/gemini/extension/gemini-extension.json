@@ -1,0 +1,6 @@
+{
+  "name": "multi-agent-cowork",
+  "version": "3.0.0",
+  "description": "Cross-CLI multi-agent orchestration commands and skills",
+  "contextFileName": "GEMINI.md"
+}

@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi-agent-cowork"
+version = "3.0.0"
+description = "Cross-CLI multi-agent orchestration runtime for Codex CLI, Claude Code, and Gemini CLI."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

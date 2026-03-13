@@ -1,0 +1,7 @@
+[
+  {
+    "id": "example-pytest-flake",
+    "command": "pytest -q",
+    "match_text": "flake candidate example"
+  }
+]

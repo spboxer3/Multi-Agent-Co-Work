@@ -1,0 +1,8 @@
+description = "persist routing profile or per-phase overrides"
+prompt = """
+Run this exact shell command first and wait for it to finish:
+
+!{python3 .agents/multi-agent-cowork/runtime/maw.py routing set {{args}}}
+
+Then summarize only the persisted outcome.
+"""

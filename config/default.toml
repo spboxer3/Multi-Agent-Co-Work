@@ -1,0 +1,66 @@
+[run]
+state_dir = ".multi-agent-cowork"
+routing_memory = ".multi-agent-cowork/routing-memory.json"
+known_failures = ".multi-agent-cowork/known-failures.json"
+max_parallel = 3
+fail_fast = false
+
+[dispatch]
+default_profile = "balanced"
+
+[routing_profiles.balanced]
+explore_providers = ["claude", "gemini"]
+plan_provider = "claude"
+implement_provider = "codex"
+verify_providers = ["shell", "claude"]
+review_providers = ["claude", "gemini"]
+
+[routing_profiles.fast]
+explore_providers = ["claude"]
+plan_provider = "claude"
+implement_provider = "codex"
+verify_providers = ["shell"]
+review_providers = ["claude"]
+
+[routing_profiles.recovery]
+explore_providers = ["claude", "gemini"]
+plan_provider = "claude"
+implement_provider = "codex"
+verify_providers = ["shell", "claude", "gemini"]
+review_providers = ["claude", "gemini"]
+
+[policies]
+forbid_self_review = true
+require_shell_verifier = true
+
+[verification]
+commands = [
+  "python3 -m compileall runtime tests",
+]
+stop_on_failure = false
+rerun_failures_once = true
+
+[providers.codex]
+command = "codex"
+model = "gpt-5.2-codex"
+full_auto = true
+sandbox_read_only = "read-only"
+sandbox_write = "workspace-write"
+timeout_seconds = 2400
+
+[providers.claude]
+command = "claude"
+model = "sonnet"
+read_only_permission_mode = "acceptEdits"
+allow_unattended_write = false
+timeout_seconds = 2400
+
+[providers.gemini]
+command = "gemini"
+read_only_only = true
+extra_args = []
+timeout_seconds = 2400
+
+[providers.shell]
+command = "sh"
+timeout_seconds = 1800
