@@ -1,6 +1,6 @@
 {
   "name": "maw",
-  "version": "4.1.0",
+  "version": "0.1.0",
   "description": "Coordinate non-trivial coding tasks through a structured multi-role workflow across Claude Code, Codex CLI, and Gemini CLI. Splits work into explicit phases — explore, plan, implement, verify, review — with handoff packets and decision gates to prevent role bleed.",
   "author": {
     "name": "Roland Chien"
