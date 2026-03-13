@@ -21,36 +21,42 @@ run() {
   "$@"
 }
 
-if [ -f package.json ]; then
-  if command -v jq >/dev/null 2>&1; then
-    HAS_LINT=$(jq -r '.scripts.lint // empty' package.json)
-    HAS_TEST=$(jq -r '.scripts.test // empty' package.json)
-    HAS_TYPECHECK=$(jq -r '.scripts.typecheck // empty' package.json)
-    HAS_BUILD=$(jq -r '.scripts.build // empty' package.json)
-  else
-    HAS_LINT=""
-    HAS_TEST=""
-    HAS_TYPECHECK=""
-    HAS_BUILD=""
-  fi
+echo "=== Running Python static analysis and security checks ==="
 
-  PKG=""
-  if command -v pnpm >/dev/null 2>&1; then
-    PKG="pnpm"
-  elif command -v npm >/dev/null 2>&1; then
-    PKG="npm"
-  elif command -v yarn >/dev/null 2>&1; then
-    PKG="yarn"
-  fi
-
-  if [ -n "$PKG" ]; then
-    [ -n "$HAS_TEST" ] && run $PKG test || true
-    [ -n "$HAS_LINT" ] && run $PKG run lint || true
-    [ -n "$HAS_TYPECHECK" ] && run $PKG run typecheck || true
-    [ -n "$HAS_BUILD" ] && run $PKG run build || true
-  else
-    echo "No Node package manager found"
-  fi
+# 1. Flake8 Style Check
+if command -v flake8 >/dev/null 2>&1; then
+  run flake8 runtime tests
 else
-  echo "No package.json found; adapt this script for your stack"
+  echo "flake8 not found, skipping style check."
 fi
+
+# 2. Mypy Type Check
+if command -v mypy >/dev/null 2>&1; then
+  run mypy runtime tests
+else
+  echo "mypy not found, skipping type check."
+fi
+
+# 3. Bandit Security Scan
+if command -v bandit >/dev/null 2>&1; then
+  run bandit -r runtime -s B602,B603,B404,B112
+else
+  echo "bandit not found, skipping security scan."
+fi
+
+# 4. Pytest with Coverage
+if command -v pytest >/dev/null 2>&1; then
+  run pytest --cov=runtime --cov-fail-under=40 tests/
+else
+  echo "pytest not found, skipping tests."
+fi
+
+# 5. Safety Dependency Check
+if command -v safety >/dev/null 2>&1; then
+  run safety check
+else
+  echo "safety not found, skipping dependency check."
+fi
+
+echo
+echo "=== All checks completed! ==="
