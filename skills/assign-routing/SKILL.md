@@ -1,5 +1,5 @@
 ---
-name: assign-routing
+name: maw-assign-routing
 description: Persist a new routing profile or per-phase provider override for future runs.
 ---
 

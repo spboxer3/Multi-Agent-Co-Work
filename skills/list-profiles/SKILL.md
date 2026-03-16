@@ -1,5 +1,5 @@
 ---
-name: list-profiles
+name: maw-list-profiles
 description: Show the built-in routing profiles available for persistent agent assignment.
 ---
 

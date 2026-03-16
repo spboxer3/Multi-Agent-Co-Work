@@ -1,5 +1,5 @@
 ---
-name: dispatch
+name: maw-dispatch
 description: Dispatch the repository-local orchestrator.
 disable-model-invocation: true
 argument-hint: [task]

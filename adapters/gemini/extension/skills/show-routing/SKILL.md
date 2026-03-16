@@ -1,5 +1,5 @@
 ---
-name: show-routing
+name: maw-show-routing
 description: Wrapper skill for show-routing.
 ---
 

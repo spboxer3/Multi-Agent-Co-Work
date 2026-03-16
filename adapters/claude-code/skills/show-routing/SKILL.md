@@ -1,5 +1,5 @@
 ---
-name: show-routing
+name: maw-show-routing
 description: Show persistent routing memory.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Glob, Grep

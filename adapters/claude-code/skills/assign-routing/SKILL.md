@@ -1,5 +1,5 @@
 ---
-name: assign-routing
+name: maw-assign-routing
 description: Persist new routing choices.
 disable-model-invocation: true
 argument-hint: [--profile ... | --phase ...]

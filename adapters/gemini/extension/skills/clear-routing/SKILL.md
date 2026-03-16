@@ -1,5 +1,5 @@
 ---
-name: clear-routing
+name: maw-clear-routing
 description: Wrapper skill for clear-routing.
 ---
 
