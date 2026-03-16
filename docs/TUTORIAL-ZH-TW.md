@@ -113,7 +113,7 @@ bash .agents/multi-agent-cowork/scripts/install_gemini.sh
 ### 步驟三：驗證安裝
 
 ```bash
-python3 .agents/multi-agent-cowork/runtime/maw.py doctor
+python runtime/maw.py doctor
 ```
 
 此指令會檢查：倉庫根目錄偵測、設定檔有效性以及 CLI 工具是否可用。在繼續之前修復它報告的任何問題。
@@ -122,10 +122,10 @@ python3 .agents/multi-agent-cowork/runtime/maw.py doctor
 
 ```bash
 # 查看可用的路由設定檔
-python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles
+python runtime/maw.py routing profiles
 
 # 選擇一個設定檔
-python3 .agents/multi-agent-cowork/runtime/maw.py routing set --profile balanced
+python runtime/maw.py routing set --profile balanced
 ```
 
 ### 步驟五：（選用）匯入已知失敗

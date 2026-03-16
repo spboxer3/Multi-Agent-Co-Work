@@ -2,7 +2,7 @@ description = "dispatch a multi-agent-cowork run"
 prompt = """
 Run this exact shell command first and wait for it to finish:
 
-!{python3 .agents/multi-agent-cowork/runtime/maw.py dispatch --task "{{args}}"}
+!{python runtime/maw.py dispatch --task "{{args}}"}
 
 Then summarize only the persisted outcome.
 """

@@ -37,7 +37,7 @@ Via plugin sub-commands:
 
 Via python directly:
 ```bash
-python3 .agents/multi-agent-cowork/runtime/maw.py doctor
-python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles
-python3 .agents/multi-agent-cowork/runtime/maw.py dispatch --task "<task>"
+python runtime/maw.py doctor
+python runtime/maw.py routing profiles
+python runtime/maw.py dispatch --task "<task>"
 ```

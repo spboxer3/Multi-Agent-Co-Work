@@ -23,18 +23,18 @@ After installing the plugin, these sub-commands are available using colon syntax
 The underlying Python runtime can also be invoked directly:
 
 ### Core runtime
-- `python3 .agents/multi-agent-cowork/runtime/maw.py doctor`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py dispatch --task "<task>"`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py status --run-id <id>`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py resume --run-id <id>`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py report --run-id <id>`
+- `python runtime/maw.py doctor`
+- `python runtime/maw.py dispatch --task "<task>"`
+- `python runtime/maw.py status --run-id <id>`
+- `python runtime/maw.py resume --run-id <id>`
+- `python runtime/maw.py report --run-id <id>`
 
 ### Routing memory
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing show`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing set --profile balanced`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing set --phase implement=codex --phase review=claude,gemini --note "frontend default"`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing clear`
+- `python runtime/maw.py routing profiles`
+- `python runtime/maw.py routing show`
+- `python runtime/maw.py routing set --profile balanced`
+- `python runtime/maw.py routing set --phase implement=codex --phase review=claude,gemini --note "frontend default"`
+- `python runtime/maw.py routing clear`
 
 ## Persistent files
 - routing memory: `.multi-agent-cowork/routing-memory.json`

@@ -1,1 +1,1 @@
-command = "python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles"
+command = "python runtime/maw.py routing profiles"

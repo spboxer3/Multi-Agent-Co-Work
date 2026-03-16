@@ -8,5 +8,5 @@ allowed-tools: Bash, Read, Glob, Grep
 Run this exact command first:
 
 ```bash
-python3 .agents/multi-agent-cowork/runtime/maw.py routing clear
+python runtime/maw.py routing clear
 ```

@@ -33,7 +33,7 @@ After installation, plugin sub-commands become available automatically:
 
 1. Install and authenticate `codex`, `claude`, and `gemini` on the target machine.
 2. Verify with:
-   - `python3 .agents/multi-agent-cowork/runtime/maw.py doctor`
+   - `python runtime/maw.py doctor`
 3. Optionally seed routing memory:
    - `/maw:list-profiles`
    - `/maw:assign-routing --profile balanced`

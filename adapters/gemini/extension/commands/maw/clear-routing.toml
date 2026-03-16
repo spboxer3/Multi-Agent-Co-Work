@@ -2,7 +2,7 @@ description = "clear persistent routing memory"
 prompt = """
 Run this exact shell command first and wait for it to finish:
 
-!{python3 .agents/multi-agent-cowork/runtime/maw.py routing clear}
+!{python runtime/maw.py routing clear}
 
 Then summarize only the persisted outcome.
 """

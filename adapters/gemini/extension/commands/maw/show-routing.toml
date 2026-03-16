@@ -2,7 +2,7 @@ description = "show persistent routing memory"
 prompt = """
 Run this exact shell command first and wait for it to finish:
 
-!{python3 .agents/multi-agent-cowork/runtime/maw.py routing show}
+!{python runtime/maw.py routing show}
 
 Then summarize only the persisted outcome.
 """

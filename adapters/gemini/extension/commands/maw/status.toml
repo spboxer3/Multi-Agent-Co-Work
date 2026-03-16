@@ -2,7 +2,7 @@ description = "show status for a multi-agent-cowork run"
 prompt = """
 Run this exact shell command first and wait for it to finish:
 
-!{python3 .agents/multi-agent-cowork/runtime/maw.py status --run-id "{{args}}"}
+!{python runtime/maw.py status --run-id "{{args}}"}
 
 Then summarize only the persisted outcome.
 """

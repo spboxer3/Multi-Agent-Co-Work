@@ -107,7 +107,7 @@ bash .agents/multi-agent-cowork/scripts/install_gemini.sh
 ### Step 3: Verify Installation
 
 ```bash
-python3 .agents/multi-agent-cowork/runtime/maw.py doctor
+python runtime/maw.py doctor
 ```
 
 This command checks: repository root detection, config file validity, and CLI binary availability. Fix any issues it reports before proceeding.
@@ -116,10 +116,10 @@ This command checks: repository root detection, config file validity, and CLI bi
 
 ```bash
 # View available routing profiles
-python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles
+python runtime/maw.py routing profiles
 
 # Select a profile
-python3 .agents/multi-agent-cowork/runtime/maw.py routing set --profile balanced
+python runtime/maw.py routing set --profile balanced
 ```
 
 ### Step 5: (Optional) Seed Known Failures

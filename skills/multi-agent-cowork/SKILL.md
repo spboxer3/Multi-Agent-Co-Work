@@ -32,11 +32,11 @@ Default profile: `balanced`
 Persistent routing memory lives at `.multi-agent-cowork/routing-memory.json`.
 
 Change it with:
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing profiles`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing show`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing set --profile balanced`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing set --phase implement=codex --phase review=claude,gemini`
-- `python3 .agents/multi-agent-cowork/runtime/maw.py routing clear`
+- `python runtime/maw.py routing profiles`
+- `python runtime/maw.py routing show`
+- `python runtime/maw.py routing set --profile balanced`
+- `python runtime/maw.py routing set --phase implement=codex --phase review=claude,gemini`
+- `python runtime/maw.py routing clear`
 
 ## Coordination invariants
 
@@ -181,7 +181,7 @@ The next phase may read the packet and orchestrator-selected locked artifacts on
 Primary runtime:
 
 ```bash
-python3 .agents/multi-agent-cowork/runtime/maw.py dispatch --task "<task>"
+python runtime/maw.py dispatch --task "<task>"
 ```
 
 Plugin sub-commands (Claude Code, after installing as plugin):
