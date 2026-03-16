@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.0
+- feat: consolidate sub-skill SKILL.md files into root SKILL.md for cleaner plugin structure
+- feat: add coordination invariants, phase load rules, and handoff packet contract to SKILL.md
+- feat: add intervention gates with per-role decision rules (re-explore, re-plan, rollback, block-release)
+- feat: rename `resume` skill to `mawresume` to match plugin namespace convention
+- fix: update `/maw:mawresume` command reference in SKILL.md
+- docs: update README slash commands to use `maw:` colon syntax instead of `maw-` dash syntax
+- docs: bump version to v0.3.0
+
 ## v0.2.0
 - fix: resolve .CMD/.BAT executables on Windows via `shutil.which()` in `base.py`
 - fix: pass long prompts via stdin instead of command-line args to avoid Windows 8191-char limit (Claude, Gemini, Codex)

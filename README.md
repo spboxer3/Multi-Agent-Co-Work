@@ -1,4 +1,4 @@
-# Multi-Agent Co-Work Plugin v0.2
+# Multi-Agent Co-Work Plugin v0.3
 
 Repository-local orchestrator for real multi-agent coding work across Codex CLI, Claude Code, Gemini CLI, and deterministic shell verification. Now available as a Claude Code **plugin**.
 
@@ -18,7 +18,7 @@ claude plugins install maw@Multi-Agent-Co-Work
 
 ### Step 3 — Restart Claude Code
 
-After restart, all `/maw-*` slash commands become available.
+After restart, all `/maw:*` slash commands become available.
 
 ### Step 4 (Optional) — Install Runtime CLIs
 
@@ -39,20 +39,20 @@ python runtime/maw.py doctor
 | Command | Purpose |
 |---|---|
 | `/maw` | Main skill — auto-triggers the structured multi-role workflow |
-| `/maw-dispatch <task>` | Dispatch a task to the runtime orchestrator (Claude + Codex + Gemini) |
-| `/maw-status <run-id>` | Show status of a run |
-| `/maw-resume <run-id>` | Resume an interrupted run |
-| `/maw-assign-routing` | Set routing profile or per-phase overrides |
-| `/maw-show-routing` | Show current routing configuration |
-| `/maw-clear-routing` | Reset routing to defaults |
-| `/maw-list-profiles` | List built-in routing profiles |
+| `/maw:dispatch <task>` | Dispatch a task to the runtime orchestrator (Claude + Codex + Gemini) |
+| `/maw:status <run-id>` | Show status of a run |
+| `/maw:mawresume <run-id>` | Resume an interrupted run |
+| `/maw:assign-routing` | Set routing profile or per-phase overrides |
+| `/maw:show-routing` | Show current routing configuration |
+| `/maw:clear-routing` | Reset routing to defaults |
+| `/maw:list-profiles` | List built-in routing profiles |
 
 ## Quick Start
 
 ```
-/maw-list-profiles
-/maw-assign-routing --profile balanced
-/maw-dispatch fix the settings panel escape key bug
+/maw:list-profiles
+/maw:assign-routing --profile balanced
+/maw:dispatch fix the settings panel escape key bug
 ```
 
 Or via Python directly:

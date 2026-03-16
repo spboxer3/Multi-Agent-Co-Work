@@ -8,7 +8,7 @@
     {
       "name": "maw",
       "description": "Coordinate non-trivial coding tasks through a structured multi-role workflow: orchestrate, explore, implement, verify, and review across Claude Code, Codex CLI, and Gemini CLI.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "source": "./",
       "author": {
         "name": "Roland Chien",

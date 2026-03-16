@@ -1,5 +1,5 @@
 ---
-name: resume
+name: mawresume
 description: Resume an interrupted multi-agent-cowork run.
 ---
 
