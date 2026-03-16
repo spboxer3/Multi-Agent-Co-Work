@@ -1,5 +1,5 @@
 ---
-name: maw-clear-routing
+name: clear-routing
 description: Clear persistent routing memory.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Glob, Grep

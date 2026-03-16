@@ -1,5 +1,5 @@
 ---
-name: maw-dispatch
+name: dispatch
 description: Wrapper skill for dispatch.
 ---
 

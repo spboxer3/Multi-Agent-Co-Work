@@ -1,5 +1,5 @@
 ---
-name: maw-multi-agent-cowork
+name: multi-agent-cowork
 description: Run real multi-agent coding work across Codex CLI, Claude Code, Gemini CLI, and shell verification when you need hard role separation, structured handoffs, routing memory, and intervention gates.
 ---
 

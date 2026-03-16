@@ -1,5 +1,5 @@
 ---
-name: maw-status
+name: status
 description: Show status for a multi-agent-cowork run.
 ---
 

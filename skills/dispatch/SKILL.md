@@ -1,5 +1,5 @@
 ---
-name: maw-dispatch
+name: dispatch
 description: Dispatch a task to the multi-agent-cowork runtime orchestrator for cross-CLI execution.
 ---
 

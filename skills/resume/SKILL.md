@@ -1,5 +1,5 @@
 ---
-name: maw-resume
+name: resume
 description: Resume an interrupted multi-agent-cowork run.
 ---
 

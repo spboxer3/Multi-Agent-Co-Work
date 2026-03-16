@@ -1,5 +1,5 @@
 ---
-name: maw-resume
+name: resume
 description: Resume an interrupted run.
 disable-model-invocation: true
 argument-hint: [run-id]

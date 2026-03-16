@@ -1,5 +1,5 @@
 ---
-name: maw-status
+name: status
 description: Show status for a run.
 disable-model-invocation: true
 argument-hint: [run-id]

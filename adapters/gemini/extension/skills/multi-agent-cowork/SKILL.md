@@ -1,5 +1,5 @@
 ---
-name: maw-multi-agent-cowork
+name: multi-agent-cowork
 description: Wrapper skill for multi-agent-cowork.
 ---
 

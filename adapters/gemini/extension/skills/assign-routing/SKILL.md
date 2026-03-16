@@ -1,5 +1,5 @@
 ---
-name: maw-assign-routing
+name: assign-routing
 description: Wrapper skill for assign-routing.
 ---
 

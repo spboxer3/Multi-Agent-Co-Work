@@ -1,5 +1,5 @@
 ---
-name: maw-show-routing
+name: show-routing
 description: Show the persistent routing memory used for agent assignment.
 ---
 
