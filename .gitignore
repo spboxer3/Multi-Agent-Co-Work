@@ -1,5 +1,6 @@
 .claude/
 .multi-agent-cowork/
+node_modules/
 __pycache__/
 *.pyc
 
