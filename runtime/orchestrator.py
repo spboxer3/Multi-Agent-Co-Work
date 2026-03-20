@@ -12,6 +12,7 @@ from .prompting import build_prompt
 from .providers import provider_factory
 from .routing_memory import load as load_routing_memory
 from .state_machine import StateMachine, NEXT_PHASE, RECOMMENDED_NEXT
+from .streaming import LiveLogger
 from .utils import ensure_dir, new_run_id, utc_now, write_json, write_text, read_json
 
 
@@ -24,11 +25,21 @@ class Orchestrator:
         self.schema_path = self.package_root / "schemas" / "agent_result.schema.json"
         self.schema = json.loads(self.schema_path.read_text(encoding="utf-8"))
 
-    def dispatch(self, task: str, run_id: str | None = None, phase_limit: str | None = None, start_phase: str | None = None) -> Path:
+    def dispatch(self, task: str, run_id: str | None = None, phase_limit: str | None = None, start_phase: str | None = None, verbose: bool = False, on_log_ready=None) -> Path:
         routing_memory = load_routing_memory(self.repo_root, self.config)
         routing = self.config.resolve_phase_providers(routing_memory)
         run_id = run_id or new_run_id(task)
         run_dir = create_run_layout(self.state_root, run_id)
+        log_path = run_dir / "live.log"
+        self.logger = LiveLogger(log_path, console=verbose)
+        if on_log_ready:
+            try:
+                on_log_ready(log_path)
+            except Exception:
+                pass
+        self.logger.info(f"Run: {run_id}")
+        self.logger.info(f"Task: {task}")
+        self.logger.info(f"Routing: {json.dumps(routing)}")
         manifest_path = run_dir / "manifest.json"
         if manifest_path.exists():
             prior = read_json(manifest_path)
@@ -36,7 +47,15 @@ class Orchestrator:
             manifest.status = RunStatus.RUNNING.value
         else:
             manifest = RunManifest(run_id=run_id, task=task, repo_root=str(self.repo_root), state_dir=str(self.state_root), routing={"memory": routing_memory, "resolved": routing}, started_at=utc_now(), status=RunStatus.RUNNING.value)
-        machine = StateMachine(current=PhaseName.INTAKE.value if not start_phase else start_phase)
+        # When starting from a specific phase, set machine to the preceding phase
+        # so that advance(start_phase) is a valid transition.
+        _phase_order = [PhaseName.INTAKE.value, "explore", "plan", "implement", "verify", "review"]
+        if start_phase and start_phase in _phase_order:
+            prev_idx = _phase_order.index(start_phase) - 1
+            machine_start = _phase_order[max(prev_idx, 0)]
+        else:
+            machine_start = PhaseName.INTAKE.value
+        machine = StateMachine(current=machine_start)
         self._save_manifest(run_dir, manifest)
         write_text(self.state_root / "latest-run.txt", run_id + "\n")
         write_json(run_dir / "routing.json", manifest.routing)
@@ -54,16 +73,25 @@ class Orchestrator:
         overall_failures: list[ProviderResult] = []
         stopped_early = False
         for phase in phases:
+            providers = routing.get(phase, [])
+            self.logger.phase_banner(phase, providers)
             machine.advance(phase)
             manifest.current_phase = phase
             manifest.next_phase = NEXT_PHASE.get(phase)
             self._save_manifest(run_dir, manifest)
             results = self._run_phase(run_dir, task, phase, routing)
+            for r in results:
+                self.logger.provider_done(r.provider, r.duration_seconds or 0, r.status)
+                if r.summary:
+                    self.logger.provider_summary(r.provider, r.decision, r.confidence, r.summary)
+                if r.blockers:
+                    self.logger.log(r.provider, f"blockers: {r.blockers}")
             manifest.phases[phase] = {"providers": [r.to_dict() for r in results], "completed_at": utc_now()}
             summary_path = run_dir / f"{phase}-summary.md"
             write_text(summary_path, self._phase_summary(results))
             manifest.artifacts[f"{phase}-summary"] = str(summary_path)
             gate = self._evaluate_gate(phase, results)
+            self.logger.gate_result(phase, gate["passed"], gate.get("missing"))
             manifest.gates[phase] = gate
             if phase in NEXT_PHASE:
                 handoff_path = write_handoff(run_dir, phase, NEXT_PHASE[phase], gate, results, routing)
@@ -81,6 +109,7 @@ class Orchestrator:
                 stopped_early = True
                 break
 
+        self.logger.info("═══ REPORT ═══")
         manifest.current_phase = PhaseName.REPORT.value
         report_text = self._final_report(manifest)
         report_path = write_final_report(run_dir, report_text)
@@ -97,6 +126,7 @@ class Orchestrator:
         else:
             manifest.status = RunStatus.COMPLETED.value
         self._save_manifest(run_dir, manifest)
+        self.logger.info(f"Final status: {manifest.status}")
         return run_dir
 
     def resume(self, run_id: str) -> Path:
@@ -147,7 +177,7 @@ class Orchestrator:
             cfg["known_failures_path"] = str(self.repo_root / self.config.known_failures_path)
         writable = phase == PhaseName.IMPLEMENT.value
         prompt = build_prompt(provider=provider_name, role=self._role_for_phase(phase, provider_name), phase=phase, task=task, repo_root=self.repo_root, run_dir=run_dir, package_root=self.package_root, writable=writable, schema=self.schema)
-        provider = provider_factory(provider_name, cfg)
+        provider = provider_factory(provider_name, cfg, logger=getattr(self, "logger", None))
         return provider.invoke(role=self._role_for_phase(phase, provider_name), phase=phase, prompt=prompt, repo_root=self.repo_root, run_dir=run_dir, writable=writable, schema_path=self.schema_path)
 
     def _role_for_phase(self, phase: str, provider_name: str) -> str:

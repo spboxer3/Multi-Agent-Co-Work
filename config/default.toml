@@ -35,7 +35,7 @@ require_shell_verifier = true
 
 [verification]
 commands = [
-  "python3 -m compileall runtime tests",
+  "python -m compileall runtime tests",
 ]
 stop_on_failure = false
 rerun_failures_once = true
@@ -44,9 +44,10 @@ rerun_failures_once = true
 command = "codex"
 model = "gpt-5.2-codex"
 full_auto = true
-sandbox_read_only = "read-only"
-sandbox_write = "workspace-write"
+no_sandbox = true
+extra_args = []
 timeout_seconds = 2400
+streaming = true
 
 [providers.claude]
 command = "claude"
@@ -54,12 +55,14 @@ model = "sonnet"
 read_only_permission_mode = "acceptEdits"
 allow_unattended_write = false
 timeout_seconds = 2400
+streaming = true
 
 [providers.gemini]
 command = "gemini"
 read_only_only = true
 extra_args = []
-timeout_seconds = 2400
+timeout_seconds = 300
+streaming = true
 
 [providers.shell]
 command = "sh"

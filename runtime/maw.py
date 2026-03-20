@@ -64,12 +64,55 @@ def _load_task(args: argparse.Namespace) -> str:
     raise SystemExit("A task is required via --task or --task-file")
 
 
+def _spawn_watcher(log_path: Path) -> None:
+    """Spawn a new terminal window running the live watcher."""
+    import subprocess as _sp
+    import platform
+    maw_py = str(Path(__file__).resolve())
+    system = platform.system()
+    if system == "Windows":
+        _sp.Popen(
+            ["cmd", "/c", "start", "MAW Live", sys.executable, maw_py, "watch", "--log", str(log_path)],
+            creationflags=0x00000008,  # DETACHED_PROCESS
+        )
+    elif system == "Darwin":
+        _sp.Popen(["open", "-a", "Terminal", "--args", sys.executable, maw_py, "watch", "--log", str(log_path)])
+    else:
+        for term in ["gnome-terminal", "xterm", "konsole"]:
+            if which(term):
+                if term == "gnome-terminal":
+                    _sp.Popen([term, "--", sys.executable, maw_py, "watch", "--log", str(log_path)])
+                else:
+                    _sp.Popen([term, "-e", f"{sys.executable} {maw_py} watch --log {log_path}"])
+                break
+
+
+def cmd_watch(args: argparse.Namespace) -> int:
+    from runtime.watcher import watch
+    log_path = Path(args.log) if args.log else None
+    if not log_path:
+        repo_root = repo_root_from(Path.cwd())
+        config = Config.load(repo_root, args.config)
+        latest_path = repo_root / config.state_dir / "latest-run.txt"
+        if latest_path.exists():
+            run_id = latest_path.read_text(encoding="utf-8").strip()
+            log_path = repo_root / config.state_dir / "runs" / run_id / "live.log"
+        else:
+            print("No run found. Specify --log or run a dispatch first.", file=sys.stderr)
+            return 1
+    watch(log_path)
+    return 0
+
+
 def cmd_dispatch(args: argparse.Namespace) -> int:
+    import sys
     repo_root = repo_root_from(Path.cwd())
     task = _load_task(args)
     config = Config.load(repo_root, args.config)
     orchestrator = Orchestrator(repo_root, config)
-    run_dir = orchestrator.dispatch(task=task, run_id=args.run_id, phase_limit=args.phase_limit, start_phase=args.start_phase)
+    no_watch = getattr(args, "no_watch", False)
+    watcher_cb = None if no_watch else _spawn_watcher
+    run_dir = orchestrator.dispatch(task=task, run_id=args.run_id, phase_limit=args.phase_limit, start_phase=args.start_phase, verbose=getattr(args, "verbose", False), on_log_ready=watcher_cb)
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     if args.json:
         print(json.dumps({"run_dir": str(run_dir), "manifest": manifest}, indent=2))
@@ -153,6 +196,8 @@ def build_parser() -> argparse.ArgumentParser:
     dispatch.add_argument("--start-phase", choices=["explore", "plan", "implement", "verify", "review"])
     dispatch.add_argument("--phase-limit", choices=["explore", "plan", "implement", "verify", "review"])
     dispatch.add_argument("--json", action="store_true")
+    dispatch.add_argument("--verbose", action="store_true", help="Stream live progress to stderr")
+    dispatch.add_argument("--no-watch", action="store_true", help="Do not open a live watcher window")
     dispatch.set_defaults(func=cmd_dispatch)
     status = sub.add_parser("status")
     status.add_argument("--run-id", required=True)
@@ -160,6 +205,9 @@ def build_parser() -> argparse.ArgumentParser:
     resume = sub.add_parser("resume")
     resume.add_argument("--run-id", required=True)
     resume.set_defaults(func=cmd_resume)
+    watch = sub.add_parser("watch", help="Live watcher for agent communication")
+    watch.add_argument("--log", help="Path to live.log (defaults to latest run)")
+    watch.set_defaults(func=cmd_watch)
     report = sub.add_parser("report")
     report.add_argument("--run-id", required=True)
     report.set_defaults(func=cmd_report)
