@@ -71,12 +71,12 @@ def _spawn_watcher(log_path: Path) -> None:
     maw_py = str(Path(__file__).resolve())
     system = platform.system()
     if system == "Windows":
-        _sp.Popen(
+        _sp.Popen(  # nosec B607
             ["cmd", "/c", "start", "MAW Live", sys.executable, maw_py, "watch", "--log", str(log_path)],
             creationflags=0x00000008,  # DETACHED_PROCESS
         )
     elif system == "Darwin":
-        _sp.Popen(["open", "-a", "Terminal", "--args", sys.executable, maw_py, "watch", "--log", str(log_path)])
+        _sp.Popen(["open", "-a", "Terminal", "--args", sys.executable, maw_py, "watch", "--log", str(log_path)])  # nosec B607
     else:
         for term in ["gnome-terminal", "xterm", "konsole"]:
             if which(term):

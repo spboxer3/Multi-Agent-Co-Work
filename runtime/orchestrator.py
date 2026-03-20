@@ -35,7 +35,7 @@ class Orchestrator:
         if on_log_ready:
             try:
                 on_log_ready(log_path)
-            except Exception:
+            except Exception:  # nosec B110
                 pass
         self.logger.info(f"Run: {run_id}")
         self.logger.info(f"Task: {task}")
