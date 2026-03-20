@@ -51,8 +51,8 @@ class CodexProvider(Provider):
                 duration = time.time() - start
                 timed_out = True
                 proc_rc = -1
-                write_text(stdout_path, exc.output or "")
-                write_text(stderr_path, exc.stderr or "")
+                write_text(stdout_path, str(exc.output or ""))
+                write_text(stderr_path, str(exc.stderr or ""))
         if timed_out:
             return ProviderResult(provider=self.name, role=role, phase=phase, status="failed", summary="Codex invocation timed out.", error=f"timeout after {timeout_seconds}s", raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), duration_seconds=duration, blockers=["codex-timeout"], decision="re-plan", confidence=0.0)
         if proc_rc != 0:

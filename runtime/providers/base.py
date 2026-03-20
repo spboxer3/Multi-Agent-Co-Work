@@ -51,7 +51,7 @@ class Provider(ABC):
         )
 
         # Write prompt to stdin
-        if input_text:
+        if input_text and proc.stdin:
             try:
                 proc.stdin.write(input_text.encode("utf-8"))
             except OSError:

@@ -105,7 +105,6 @@ def cmd_watch(args: argparse.Namespace) -> int:
 
 
 def cmd_dispatch(args: argparse.Namespace) -> int:
-    import sys
     repo_root = repo_root_from(Path.cwd())
     task = _load_task(args)
     config = Config.load(repo_root, args.config)
