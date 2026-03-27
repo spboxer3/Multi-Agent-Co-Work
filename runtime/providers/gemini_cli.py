@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from pathlib import Path
 from typing import Any
@@ -39,7 +38,6 @@ class GeminiProvider(Provider):
         # Using shell=True with stdin redirect to stay in interactive API path
         shell_cmd = f'cat "{prompt_file}" | {" ".join(cmd)}'
 
-        streaming = self.config.get("streaming", False) and self.logger is not None
         start = time.time()
         import subprocess
         try:
