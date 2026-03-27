@@ -21,6 +21,9 @@ class GeminiProvider(Provider):
         gemini_bin = self._resolve_command(self.config.get("command", "gemini"))
         timeout_seconds = int(self.config.get("timeout_seconds", 1800))
         cmd = [gemini_bin, "-p", "Process the task from stdin.", "--output-format", "json"]
+        model = self.config.get("model")
+        if model:
+            cmd += ["--model", model]
         cmd.extend(self.config.get("extra_args", []))
         streaming = self.config.get("streaming", False) and self.logger is not None
         start = time.time()

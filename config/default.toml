@@ -59,6 +59,7 @@ streaming = true
 
 [providers.gemini]
 command = "gemini"
+model = "gemini-3.1-pro-preview"
 read_only_only = true
 extra_args = []
 timeout_seconds = 300
