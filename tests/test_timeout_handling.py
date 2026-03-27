@@ -30,14 +30,15 @@ def test_gemini_timeout_non_streaming(monkeypatch, tmp_path):
     assert result.decision == "re-plan"
 
 
-def test_gemini_timeout_streaming(monkeypatch, tmp_path):
+def test_gemini_timeout_with_streaming_config(monkeypatch, tmp_path):
+    """Gemini no longer uses _run_streaming; verify timeout still works
+    even when streaming=True in config (stdin pipe mode ignores it)."""
+    def _raise_timeout(*_args, **_kwargs):
+        raise subprocess.TimeoutExpired(cmd="gemini", timeout=1, output="partial", stderr="err")
+
+    monkeypatch.setattr(subprocess, "run", _raise_timeout)
     provider = GeminiProvider("gemini", {"streaming": True, "timeout_seconds": 1, "command": "gemini"})
     provider.logger = DummyLogger()
-
-    def _fake_streaming(*_args, **_kwargs):
-        return -9, 1.0, True
-
-    monkeypatch.setattr(provider, "_run_streaming", _fake_streaming)
     result = provider.invoke(
         role="implementer",
         phase="implement",
@@ -49,6 +50,7 @@ def test_gemini_timeout_streaming(monkeypatch, tmp_path):
     )
     assert result.status == "failed"
     assert "gemini-timeout" in result.blockers
+    assert result.decision == "re-plan"
 
 
 def test_claude_and_codex_timeout_non_streaming(monkeypatch, tmp_path):
