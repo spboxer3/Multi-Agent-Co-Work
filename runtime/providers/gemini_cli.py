@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -20,30 +21,49 @@ class GeminiProvider(Provider):
         write_text(provider_dir / "prompt.txt", prompt)
         gemini_bin = self._resolve_command(self.config.get("command", "gemini"))
         timeout_seconds = int(self.config.get("timeout_seconds", 1800))
-        cmd = [gemini_bin, "-p", "Process the task from stdin.", "--output-format", "json"]
+
+        # Write prompt to a temp file and pass via stdin to avoid -p flag
+        # which triggers non-interactive mode and causes 429 capacity errors
+        prompt_file = provider_dir / "prompt_input.txt"
+        write_text(prompt_file, prompt)
+
+        # Use positional prompt (interactive mode) instead of -p (non-interactive)
+        # Interactive mode uses a different API path that doesn't hit capacity limits
+        cmd = [gemini_bin, "--output-format", "json"]
         model = self.config.get("model")
         if model:
             cmd += ["--model", model]
         cmd.extend(self.config.get("extra_args", []))
+
+        # Build the full prompt: read from file and pipe to gemini via stdin
+        # Using shell=True with stdin redirect to stay in interactive API path
+        shell_cmd = f'cat "{prompt_file}" | {" ".join(cmd)}'
+
         streaming = self.config.get("streaming", False) and self.logger is not None
         start = time.time()
-        if streaming:
-            proc_rc, duration, timed_out = self._run_streaming(cmd, input_text=prompt, cwd=repo_root, stdout_path=stdout_path, stderr_path=stderr_path, timeout=timeout_seconds)
-        else:
-            import subprocess
-            try:
-                proc = subprocess.run(cmd, cwd=repo_root, input=prompt, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout_seconds)
-                duration = time.time() - start
-                proc_rc = proc.returncode
-                write_text(stdout_path, proc.stdout)
-                write_text(stderr_path, proc.stderr)
-                timed_out = False
-            except subprocess.TimeoutExpired as exc:
-                duration = time.time() - start
-                timed_out = True
-                proc_rc = -1
-                write_text(stdout_path, str(exc.output or ""))
-                write_text(stderr_path, str(exc.stderr or ""))
+        import subprocess
+        try:
+            proc = subprocess.run(
+                shell_cmd,
+                shell=True,
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout_seconds,
+            )
+            duration = time.time() - start
+            proc_rc = proc.returncode
+            write_text(stdout_path, proc.stdout)
+            write_text(stderr_path, proc.stderr)
+            timed_out = False
+        except subprocess.TimeoutExpired as exc:
+            duration = time.time() - start
+            timed_out = True
+            proc_rc = -1
+            write_text(stdout_path, str(exc.output or ""))
+            write_text(stderr_path, str(exc.stderr or ""))
         if timed_out:
             return ProviderResult(provider=self.name, role=role, phase=phase, status="failed", summary="Gemini invocation timed out.", error=f"timeout after {timeout_seconds}s", raw_stdout_path=str(stdout_path), raw_stderr_path=str(stderr_path), duration_seconds=duration, blockers=["gemini-timeout"], decision="re-plan", confidence=0.0)
         if proc_rc != 0:
